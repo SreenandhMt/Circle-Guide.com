@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "41718740059",
+    "project_id": "circle-guide-519e4",
+    "storage_bucket": "circle-guide-519e4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:41718740059:android:237dbb108ea875ccc5fb7e",
+        "android_client_info": {
+          "package_name": "com.example.circle_guide"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAa3VNUIjkGGZMVmkcpnuKE0enJAvw2jbk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
