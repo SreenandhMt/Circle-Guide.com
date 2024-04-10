@@ -19,15 +19,17 @@ class ScreenAccount extends StatelessWidget {
           children: [
             const SizedBox(height: 29,),
           const CircleAvatar(
+            backgroundImage: NetworkImage("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTl57bnOsiSuCYk-5Z7jZBAFA-1q9-P-pgeiA&s"),
             radius: 50,
           ),
           kHeight30,
           Text(_auth.currentUser!.displayName.toString(),style: const TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
           Text(_auth.currentUser!.email.toString(),),
-          const SizedBox(height: 30,),
-          TextButton(onPressed: (){
+          const Expanded(child: SizedBox(height: 30,)),
+          ElevatedButton(onPressed: (){
             context.read<AuthPeovider>().logout();
-          }, child: const Text('Logout'))
+          }, child: const Text('Logout')),
+          const SizedBox(height: 30,)
           ],
         ),
       ),

@@ -21,10 +21,11 @@ class ScreenHome extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         leading: Container(
+          decoration: BoxDecoration(color: Colors.red,borderRadius: BorderRadius.circular(5)),
           margin: const EdgeInsets.only(left: 8, bottom: 8, top: 4),
           width: 20,
           height: 20,
-          color: Colors.red,
+          
         ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -45,7 +46,7 @@ class ScreenHome extends StatelessWidget {
                 SizedBox(
                   height: 8,
                 ),
-                Text('Alan Stre...'),
+                Text('...'),
                 Text(
                   'Safe Location',
                   style: TextStyle(color: Colors.yellow),

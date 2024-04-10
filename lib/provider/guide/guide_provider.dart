@@ -11,26 +11,33 @@ import 'package:http/http.dart';
 class GuideProvider extends ChangeNotifier {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   FirebaseAuth firebaseAuth = FirebaseAuth.instance;
-  
+
   // adding user to guide
-  void addGuideUser(String gid, String token, String email) async{
+  void addGuideUser(String gid, String token, String email) async {
     Timestamp time = Timestamp.now();
     try {
       //set my guide data
       await firestore
-          .collection('Data/UserData/MyGuides/data/${firebaseAuth.currentUser!.uid}')
+          .collection(
+              'Data/UserData/MyGuides/data/${firebaseAuth.currentUser!.uid}')
           .doc(gid)
-          .set({'gid': gid,'uid':firebaseAuth.currentUser!.uid,'email': email, 'token': token, 'time': time});
+          .set({
+        'gid': gid,
+        'uid': firebaseAuth.currentUser!.uid,
+        'email': email,
+        'token': token,
+        'time': time
+      });
       // set my user data
       await firestore
           .collection('Data/GuiderData/$gid')
           .doc(firebaseAuth.currentUser!.uid)
           .set({
         'uid': firebaseAuth.currentUser!.uid,
-        'gid':gid,
+        'gid': gid,
         'email': firebaseAuth.currentUser!.email,
         'time': time,
-        'seen':0
+        'seen': 0
       });
       log('set');
     } catch (e) {
@@ -40,33 +47,33 @@ class GuideProvider extends ChangeNotifier {
   }
 
   //delete user guide
-  Future<bool> deleteData(String uid,String gid) async{
+  Future<bool> deleteData(String uid, String gid) async {
     try {
       //delete my guide data
       await firestore
           .collection('Data/UserData/MyGuides/data/$uid')
-          .doc(gid).delete();
-    //delete my user data
-     await firestore
-          .collection('Data/GuiderData/$gid')
-          .doc(uid)
+          .doc(gid)
           .delete();
-          log('delete');
+      //delete my user data
+      await firestore.collection('Data/GuiderData/$gid').doc(uid).delete();
+      log('delete');
       notifyListeners();
       return true;
     } catch (e) {
       return false;
     }
   }
+
   // get user to all guide data
   Future<List<Map<String, dynamic>>?> getMyGuideData() async {
     try {
       List<Map<String, dynamic>> data = await firestore
-          .collection('Data/UserData/MyGuides/data/${firebaseAuth.currentUser!.uid}')
+          .collection(
+              'Data/UserData/MyGuides/data/${firebaseAuth.currentUser!.uid}')
           .orderBy('time', descending: false)
           .get()
           .then((value) => value.docs.map((e) => e.data()).toList());
-          notifyListeners();
+      notifyListeners();
       return data;
     } catch (e) {
       log(e.toString());
@@ -90,37 +97,42 @@ class GuideProvider extends ChangeNotifier {
     }
   }
 
-  // remove seen data 
-  Future<void> removeSeenData(data)async
-  {
+  // remove seen data
+  Future<void> removeSeenData(data) async {
     try {
-         await firestore
-          .collection('Data/GuiderData/${data['uid']}').doc(data['uid'])
-              .update({'uid': data['uid'],'gid':data['gid'],'email': data['email'],'time': data['time'],'seen': 0});
-              log('updated');
-              
-    notifyListeners();
+      await firestore
+          .collection('Data/GuiderData/${data['gid']}')
+          .doc(data['uid'])
+          .update({
+        'uid': data['uid'],
+        'gid': data['gid'],
+        'email': data['email'],
+        'time': data['time'],
+        'seen': 0
+      });
+      log('updated');
+
+      notifyListeners();
     } catch (e) {
       log(e.toString());
       return;
     }
   }
 
-
   // sos setup
-  void sos(locx, locy)async {
-    
+  void sos(locx, locy) async {
     log('try');
     // geting my guide data
     await firestore
-        .collection('Data/UserData/MyGuides/data/${firebaseAuth.currentUser!.uid}')
+        .collection(
+            'Data/UserData/MyGuides/data/${firebaseAuth.currentUser!.uid}')
         .orderBy('time', descending: false)
         .get()
         .then((value) {
       // map list of data
       return value.docs.map((e) {
-        // send notification on user in 2 time 
-        mappingnotification(e.data(),locx,locy);
+        // send notification on user in 2 time
+        mappingnotification(e.data(), locx, locy);
         // returning
         return e.data();
       }).toList();
@@ -131,7 +143,7 @@ class GuideProvider extends ChangeNotifier {
   }
 
   // sending notifiation on each guides
-  Future<void> mappingnotification(data,x,y) async {
+  Future<void> mappingnotification(data, x, y) async {
     Timestamp time = Timestamp.now();
     DateTime date = DateTime.now();
     final newDate = formatDate(date, [hh, ':', nn, ' ', am]);
@@ -163,27 +175,28 @@ class GuideProvider extends ChangeNotifier {
           .update({
         'uid': guider.data()!['uid'],
         'email': guider.data()!['email'],
-        'gid':guider.data()!['gid'],
+        'gid': guider.data()!['gid'],
         'time': time,
-        'seen':1
+        'seen': 1
       });
-       await firestore
-        .collection('Data')
+      await firestore
+          .collection('Data')
           .doc('help')
           .collection('${guider.data()!['gid']}+${guider.data()!['uid']}')
-        .add({
-      'time': time,
-      'date': newDate,
-      'locx': x,
-      'locy': y,
-    });
+          .add({
+        'time': time,
+        'date': newDate,
+        'locx': x,
+        'locy': y,
+      });
     } catch (e) {
       log(e.toString());
     }
   }
 
   //get location data
-  Future<List<Map<String, dynamic>>?> getLocation(String uid,String gid) async {
+  Future<List<Map<String, dynamic>>?> getLocation(
+      String uid, String gid) async {
     try {
       final List<Map<String, dynamic>> data = await firestore
           .collection('Data/help/$gid+$uid')
@@ -197,7 +210,7 @@ class GuideProvider extends ChangeNotifier {
     }
   }
 
-  // get all user data 
+  // get all user data
   Future<List<Map<String, dynamic>>?> getGuideData() async {
     try {
       final List<Map<String, dynamic>> data = await firestore
@@ -211,12 +224,3 @@ class GuideProvider extends ChangeNotifier {
     }
   }
 }
-
-
-
-// firestore
-//             .collection('sos')
-//             .doc(e.data()['uid'])
-//             .update({'sos': 1}).timeout(const Duration(seconds: 1),
-//                 onTimeout: () =>
-//                     firestore.collection('sos').doc(e.data()['uid']).delete());

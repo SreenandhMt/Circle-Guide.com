@@ -1,16 +1,16 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:circle_guide/core/size/size.dart';
-import 'package:circle_guide/page/auth/auth_main.dart';
 import 'package:circle_guide/provider/auth/auth_provider.dart';
 import 'package:circle_guide/widget/button/custom_button.dart';
-import 'package:circle_guide/widget/custom/text_field.dart';
 
 TextEditingController _email = TextEditingController();
 TextEditingController _password = TextEditingController();
 
-class ScreenLogin extends StatelessWidget {
+class ScreenLogin extends StatefulWidget {
   const ScreenLogin({
     Key? key,
     this.onTap,
@@ -18,61 +18,116 @@ class ScreenLogin extends StatelessWidget {
   final void Function()? onTap;
 
   @override
+  State<ScreenLogin> createState() => _ScreenLoginState();
+}
+
+class _ScreenLoginState extends State<ScreenLogin> {
+  final _form = GlobalKey<FormState>();
+  @override
   Widget build(BuildContext context) {
-    return Consumer<AuthPeovider>(builder: (context, value, child) {
-      return Scaffold(
-        body: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Center(
-                  child: Text(
-                'Welcome',
-                style: TextStyle(fontSize: 30),
-              )),
-              const SizedBox(
-                height: 30,
-              ),
-              CustomTextField(text: 'Email', controller: _email),
-              const SizedBox(
-                height: 20,
-              ),
-              CustomTextField(text: 'Password', controller: _password),
-              const SizedBox(
-                height: 20,
-              ),
-              GradiantButton(
-                onTap: () async {
-                  await value.loginWithEmailAndPassword(_email.text, _password.text,context);
-                },
-                text:'Login',
-              ),
-              kHeight15,
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text('alrady a member'),
-                  const SizedBox(
-                    width: 4,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const MainAuthScreenData(                              
-                                  )),
-                          (route) => false);
-                    },
-                    child: const Text(
-                      'registor',
-                      style: TextStyle(color: Colors.green),
+    return Consumer<AuthPeovider>(builder: (context, state, child) {
+      return Form(
+        key: _form,
+        child: Scaffold(
+          body: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Center(
+                    child: Text(
+                  'Welcome',
+                  style: TextStyle(fontSize: 30),
+                )),
+                const SizedBox(
+                  height: 30,
+                ),
+                TextFormField(
+                  key: const ValueKey("email"),
+                  validator: (value) {
+                    log(value.toString());
+                    if(value!.isEmpty)
+                    {
+                      return "enter a email";
+                    }
+                    else if(!value.contains("@"))
+                    {
+                      return "invaled email";
+                    }else if(state.error!=null&&state.error!.isNotEmpty)
+                    {
+                      return state.error;
+                    }
+                    else{
+                      return null;
+                    }
+                  },
+                  controller: _email,
+                  decoration: InputDecoration(
+                      hintText: "Email",
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25))),
+                ),
+                const SizedBox(
+                  height: 15,
+                ),
+                TextFormField(
+                  key: const ValueKey("password"),
+
+                  validator: (value) {
+                    if(value!.isEmpty)
+                    {
+                      return "enter a password";
+                    }
+                    else if(value.length<=6)
+                    {
+                      return "password minimum 6 characters";
+                    }else{
+                      return null;
+                    }
+                  },
+                  controller: _password,
+                  decoration: InputDecoration(
+                      hintText: "Password",
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25))),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                GradiantButton(
+                  onTap: () async {
+                    _form.currentState!.validate();
+                    // {
+                    //   _form.currentState!.save();
+                    // }
+                    setState(() {
+                      
+                    });
+                    
+                    await state.loginWithEmailAndPassword(_email.text, _password.text,context);
+                    _form.currentState!.validate();
+                  },
+                  text:'Login',
+                ),
+                kHeight15,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text('alrady a member'),
+                    const SizedBox(
+                      width: 4,
                     ),
-                  )
-                ],
-              ),
-            ],
+                    GestureDetector(
+                      onTap:widget.onTap,
+                      child: const Text(
+                        'registor',
+                        style: TextStyle(color: Colors.green),
+                      ),
+                    )
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       );

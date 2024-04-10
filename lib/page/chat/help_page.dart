@@ -93,6 +93,7 @@ class LocationCard extends StatelessWidget {
       children: [
         GestureDetector(
             onTap: () {
+              
               Navigator.pop(context);
               Navigator.of(context).push(
                 MaterialPageRoute(

@@ -44,7 +44,7 @@ class ScreenGuide extends StatelessWidget {
                 ? const Padding(
                     padding: EdgeInsets.only(left: 17),
                     child: Text(
-                      'You Are a Guide',
+                      'You are a Guide',
                       style: TextStyle(fontSize: 16),
                     ),
                   )

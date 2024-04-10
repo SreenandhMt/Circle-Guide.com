@@ -71,9 +71,9 @@ class GuideTile extends StatelessWidget {
               child: Container(
                 width: 70,
                 height: 30,
-                color: Colors.redAccent,
+                color: Colors.green,
                 child: const Center(
-                  child: Text('remove'),
+                  child: Text('add'),
                 ),
               ),
             ),
