@@ -6,8 +6,9 @@ import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 
-import 'package:circle_guide/provider/guide/guide_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../../provider/chat/chat_provider.dart';
 
 dynamic _locx,_locy;
 FirebaseAuth _auth = FirebaseAuth.instance;
@@ -87,9 +88,9 @@ class ScreenHome extends StatelessWidget {
               child: IconButton(onPressed: ()async{
                 await locGetLocationUpdates();
                 if(!context.mounted)return;
-                context.read<GuideProvider>().sos(_locx, _locy);
-              }, icon: const Icon(
-                Icons.sensors,
+                context.read<ChatProvider>().sos(_locx, _locy);
+              }, icon: Icon(
+                Icons.sensors,color: Theme.of(context).brightness == Brightness.dark? Colors.white:Colors.black,
                 size: 200,
               ),)
             ),
@@ -183,7 +184,7 @@ class CustomCard extends StatelessWidget {
         margin: const EdgeInsets.all(10),
         height: sreenSize.height*0.14,
         width: sreenSize.width*0.44,
-        decoration: BoxDecoration(color: Colors.grey[800],borderRadius: BorderRadius.circular(5)),
+        decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary,borderRadius: BorderRadius.circular(5)),
         child:  Stack(
           children: [
             Positioned(left: 5,top: 10,child: Row(

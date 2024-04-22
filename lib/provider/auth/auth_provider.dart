@@ -18,8 +18,10 @@ class AuthPeovider extends ChangeNotifier {
       await auth.signInWithEmailAndPassword(email: email, password: password).then((value) => firestore.collection('profile').doc(auth.currentUser!.uid).update({
         'uid':value.user!.uid,
         'email':value.user!.email,
+        "name":value.user!.displayName!,
         'NotificationId':token
       }));
+      await auth.currentUser!.updatePhotoURL(token);
     } on FirebaseAuthException catch (e) {
       error= e.message!;
       return;
@@ -35,8 +37,9 @@ class AuthPeovider extends ChangeNotifier {
         'uid':auth.currentUser!.uid,
         'email':auth.currentUser!.email,
         'NotificationId':token,
-        'name':auth.currentUser!.displayName,
+        'name':name,
       });
+      await auth.currentUser!.updatePhotoURL(token);
       await auth.currentUser!.updateDisplayName(name);
     } on FirebaseAuthException catch (e) {
       error= e.message!;

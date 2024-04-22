@@ -37,7 +37,7 @@ class _ScreenLoginState extends State<ScreenLogin> {
                 const Center(
                     child: Text(
                   'Welcome',
-                  style: TextStyle(fontSize: 30),
+                  style: TextStyle(fontSize: 37,fontWeight: FontWeight.w700),
                 )),
                 const SizedBox(
                   height: 30,
@@ -48,11 +48,11 @@ class _ScreenLoginState extends State<ScreenLogin> {
                     log(value.toString());
                     if(value!.isEmpty)
                     {
-                      return "enter a email";
+                      return "Enter a Email";
                     }
                     else if(!value.contains("@"))
                     {
-                      return "invaled email";
+                      return "Invaled Email";
                     }else if(state.error!=null&&state.error!.isNotEmpty)
                     {
                       return state.error;
@@ -68,7 +68,7 @@ class _ScreenLoginState extends State<ScreenLogin> {
                           borderRadius: BorderRadius.circular(25))),
                 ),
                 const SizedBox(
-                  height: 15,
+                  height: 10,
                 ),
                 TextFormField(
                   key: const ValueKey("password"),
@@ -76,11 +76,11 @@ class _ScreenLoginState extends State<ScreenLogin> {
                   validator: (value) {
                     if(value!.isEmpty)
                     {
-                      return "enter a password";
+                      return "Enter a Password";
                     }
                     else if(value.length<=6)
                     {
-                      return "password minimum 6 characters";
+                      return "Password Minimum 6 Characters";
                     }else{
                       return null;
                     }
@@ -105,7 +105,7 @@ class _ScreenLoginState extends State<ScreenLogin> {
                     });
                     
                     await state.loginWithEmailAndPassword(_email.text, _password.text,context);
-                    _form.currentState!.validate();
+                    
                   },
                   text:'Login',
                 ),
@@ -113,15 +113,15 @@ class _ScreenLoginState extends State<ScreenLogin> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('alrady a member'),
+                    const Text('You are not a member',style: TextStyle(fontSize: 13)),
                     const SizedBox(
                       width: 4,
                     ),
                     GestureDetector(
                       onTap:widget.onTap,
                       child: const Text(
-                        'registor',
-                        style: TextStyle(color: Colors.green),
+                        'Registor',
+                        style: TextStyle(color: Colors.green,fontSize: 15),
                       ),
                     )
                   ],

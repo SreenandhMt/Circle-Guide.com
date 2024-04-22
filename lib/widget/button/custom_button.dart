@@ -15,15 +15,11 @@ class GradiantButton extends StatelessWidget {
       onTap: onTap,
       child: Container(
         width: double.infinity,
-        height: 50,
+        height: 60,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(25),
-          gradient: LinearGradient(colors: [
+          gradient: const LinearGradient(colors: [
             Color.fromARGB(255, 213, 121, 193),
-            Color.fromARGB(255, 152, 101, 151),
-            Color.fromARGB(255, 149, 88, 111),
-            Color.fromARGB(255, 157, 100, 125),
-            Color.fromARGB(255, 154, 105, 141),
             Color.fromARGB(255, 116, 46, 130),
           ]),
         ),

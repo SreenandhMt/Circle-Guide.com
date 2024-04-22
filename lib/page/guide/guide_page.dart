@@ -1,15 +1,14 @@
+import 'package:circle_guide/page/search/friend_request.dart';
+import 'package:circle_guide/provider/chat/chat_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:circle_guide/page/add_guide/add_guide_page.dart';
-import 'package:circle_guide/page/chat/help_page.dart';
-import 'package:circle_guide/provider/guide/guide_provider.dart';
+import 'package:circle_guide/page/search/search_guide_page.dart';
+import 'package:circle_guide/page/chat/chat_page.dart';
 
-List<Map<String, dynamic>>? guiderValues;
-List<Map<String, dynamic>>? guiderData;
-FirebaseAuth _auth = FirebaseAuth.instance;
+import '../../provider/guide/guide_provider.dart';
+
 FirebaseFirestore firestore = FirebaseFirestore.instance;
 
 class ScreenGuide extends StatelessWidget {
@@ -17,11 +16,11 @@ class ScreenGuide extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<GuideProvider>(builder: (context, value, child) {
-      getMyGuideData(context);
-      getMyUserData(context);
+    context.read<GuidePageProvider>().getMyFriends();
+    return Consumer<GuidePageProvider>(builder: (context, value, child) {
       return Scaffold(
         appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.secondary,
           title: const Text('Guides'),
           actions: [
             IconButton(
@@ -32,7 +31,12 @@ class ScreenGuide extends StatelessWidget {
                           builder: (contex) => const ScreenNewGuideAdding()));
                 },
                 icon: const Icon(Icons.group_add_outlined)),
-            IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert)),
+            IconButton(onPressed: () {
+              Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (contex) => const FriendRequestListPage()));
+            }, icon: const Icon(Icons.notification_add_sharp)),
           ],
         ),
         body: ListView(
@@ -40,41 +44,19 @@ class ScreenGuide extends StatelessWidget {
             const SizedBox(
               height: 10,
             ),
-            guiderData != null
-                ? const Padding(
-                    padding: EdgeInsets.only(left: 17),
-                    child: Text(
-                      'You are a Guide',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  )
-                : const SizedBox(),
-            guiderData != null
-                ? Column(
-                    children: List.generate(
-                        guiderData!.length,
-                        (index) => GuideTile(
-                              data: guiderData![index],
-                              type: true,
-                              newData: index == 0 ? true : false,
-                            )),
-                  )
-                : const SizedBox(),
             const Padding(
               padding: EdgeInsets.only(left: 17),
               child: Text(
-                'Guides',
+                'Contacts',
                 style: TextStyle(fontSize: 16),
               ),
             ),
-            guiderValues != null
+            value.myFriendsCollection != null
                 ? Column(
                     children: List.generate(
-                        guiderValues!.length,
+                        value.myFriendsCollection!.length,
                         (index) => GuideTile(
-                              data: guiderValues![index],
-                              type: false,
-                              newData: false,
+                              data: value.myFriendsCollection![index]
                             )),
                   )
                 : const SizedBox(),
@@ -84,64 +66,57 @@ class ScreenGuide extends StatelessWidget {
     });
   }
 
-  void getMyGuideData(BuildContext context) async {
-    final value = await context.read<GuideProvider>().getMyGuideData();
-    if (value != null && value.isNotEmpty) {
-      guiderValues = value;
-    }else{
-      guiderValues=null;
-    }
-  }
-
-  void getMyUserData(BuildContext context) async {
-    final value = await context.read<GuideProvider>().getMyUserData();
-    if (value != null && value.isNotEmpty) {
-      guiderData = value;
-    }else{
-      guiderData = null;
-    }
-  }
 }
 
 class GuideTile extends StatelessWidget {
   const GuideTile({
     Key? key,
-    required this.data,
-    required this.type,
-    required this.newData,
+    required this.data
   }) : super(key: key);
   final Map<String, dynamic> data;
-  final bool type;
-  final bool newData;
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
-        if (type) {
-          await context.read<GuideProvider>().removeSeenData(data);
-          if (!context.mounted) return;
+        context.read<ChatProvider>().removeSeenData(data);
           Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => ScreenChatPage(
-                type: type,
                     data: data,
                   )));
-        } else {
-          Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => ScreenChatPage(
-                type: type,
-                    data:data,
-                  )));
-        }
       },
-      child: ListTile(
-        leading: const CircleAvatar(),
-        title: const Text('Name'),
-        subtitle: Text(data['email']),
-        trailing: data['seen'] != null && data['seen'] != 0
-            ? const CircleAvatar(radius: 5)
-            : const SizedBox(),
-      ),
+      child: 
+      Container(
+        margin: const EdgeInsets.all(6),
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(20),color: Theme.of(context).colorScheme.primary),
+        width: double.infinity,height: 70,child: Stack(
+          children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 10),
+          child: Align(alignment: Alignment.centerLeft,child: CircleAvatar(backgroundColor: Theme.of(context).colorScheme.background,child: data['seenBy']==1?const Align(alignment: Alignment.topRight,child: CircleAvatar(radius: 3,backgroundColor: Colors.red,)):const SizedBox(),)),
+        ),
+        Align(alignment: Alignment.center,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text('${data['fName']??""}'),
+          Text("${data['lastMassage']}")
+            ],
+          ),
+        ),
+        Align(alignment: Alignment.centerRight,
+          child: Padding(
+            padding: const EdgeInsets.only(right: 10),
+            child: Text("${data['time']??""}",style: const TextStyle(fontSize: 10),),
+          ),
+        ),
+      ],),)
+      // ListTile(
+      //   leading: const CircleAvatar(),
+      //   title: Text('${data['fName']}'),
+      //   subtitle: ,
+      //   trailing:data['seenBy']==1?CircleAvatar(radius: 3,backgroundColor: Colors.red,):SizedBox(),
+      // ),
     );
   }
 }
